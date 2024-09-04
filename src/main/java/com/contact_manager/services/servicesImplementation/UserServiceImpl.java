@@ -5,10 +5,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.contact_manager.Exception.ResourceNotFoundException;
 import com.contact_manager.entities.User;
+import com.contact_manager.helper.WebAppConstants;
 import com.contact_manager.repositories.UserRepository;
 import com.contact_manager.services.UserService;
 
@@ -18,11 +20,19 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public User saveUser(User user) {
         String userId = UUID.randomUUID().toString();
         user.setUserId(userId);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoleList(List.of(WebAppConstants.ROLE_USER));
+
         return userRepository.save(user);
+
+
     }
 
     @Override
@@ -36,7 +46,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
         dbUser.setName(user.getName());
         dbUser.setEmail(user.getEmail());
-        dbUser.setPassword(user.getPassword());
+        dbUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoleList(List.of(WebAppConstants.ROLE_USER));
         dbUser.setAbout(user.getAbout());
         dbUser.setPhoneNumber(user.getPhoneNumber());
         dbUser.setProfilePic(user.getProfilePic());
