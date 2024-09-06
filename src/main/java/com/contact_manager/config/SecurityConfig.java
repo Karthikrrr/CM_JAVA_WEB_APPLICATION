@@ -1,5 +1,6 @@
 package com.contact_manager.config;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,9 @@ public class SecurityConfig {
 
     @Autowired
     private CustomSecurityUserDetailService customSecurityUserDetailService;
+
+    @Autowired
+    private OAuthAuthenicationSuccessHandler oAuthAuthenicationSuccessHandler;
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -64,6 +68,10 @@ public class SecurityConfig {
             .logoutSuccessUrl("/login?logout=true");
         });
 
+        httpSecurity.oauth2Login(oauth -> {
+            oauth.loginPage("/login");
+            oauth.successHandler(oAuthAuthenicationSuccessHandler);
+        });
         return httpSecurity.build();
 
     }
