@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -34,45 +35,57 @@ public class OAuthAuthenicationSuccessHandler implements AuthenticationSuccessHa
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
 
-                DefaultOAuth2User oAuth2User = (DefaultOAuth2User)authentication.getPrincipal();
+        var oauth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
+        String authorizedRegisteredId = oauth2AuthenticationToken.getAuthorizedClientRegistrationId();
+        logger.info(authorizedRegisteredId);
 
-                // oAuth2User.getAttributes().forEach((key, value) -> {
-                //     logger.info(key + " : " + value);
-                // });
+        DefaultOAuth2User oAuth2User = (DefaultOAuth2User) authentication.getPrincipal();
 
-                String email = oAuth2User.getAttribute("email").toString();
-                String name = oAuth2User.getAttribute("name").toString();
-                String picture = oAuth2User.getAttribute("picture").toString();
-                
+        oAuth2User.getAttributes().forEach((key, value) -> {
+            logger.info(key + " : " + value);
+        });
 
-                User google_user = new User();
+        User user = new User();
+        user.setUserId(UUID.randomUUID().toString());
+        user.setRoleList(List.of(WebAppConstants.ROLE_USER));
+        user.setEmailVerified(true);
+        user.setEnabled(true);
 
-                google_user.setEmail(email);
-                google_user.setName(name);
-                google_user.setProfilePic(picture);
-                google_user.setPassword("password");
-                google_user.setUserId(UUID.randomUUID().toString());
-                google_user.setProvider(Providers.GOOGLE);
-                google_user.setEnabled(true);
-                google_user.setEmailVerified(true);
-                google_user.setProviderUserId(oAuth2User.getName());
-                google_user.setRoleList(List.of(WebAppConstants.ROLE_USER));
-                google_user.setAbout("This Account Is Created By " + name);
+        //google
+        if (authorizedRegisteredId.equalsIgnoreCase("google")) {
+            // getting google attrubutes
+            user.setEmail(oAuth2User.getAttribute("email"));
+            user.setProfilePic(oAuth2User.getAttribute("picture"));
+            user.setName(oAuth2User.getAttribute("name"));
+            user.setProviderUserId(oAuth2User.getName());
+            user.setProvider(Providers.GOOGLE);
+            user.setAbout("This account is created using Google");
 
+        } //github
+        else if (authorizedRegisteredId.equalsIgnoreCase("github")) {
+            // getting github attrubites
+            String email = oAuth2User.getAttribute("email") != null ? oAuth2User.getAttribute("email") : oAuth2User.getAttribute("login") + "@gmail.com";
+            String picture = oAuth2User.getAttribute("avatar_url");
+            String name = oAuth2User.getAttribute("login");
+            String providerUserId = oAuth2User.getName();
 
-                User checkUser = userRepository.findByEmail(email).orElse(null);
+            user.setEmail(email);
+            user.setProfilePic(picture);
+            user.setName(name);
+            user.setProviderUserId(providerUserId);
+            user.setProvider(Providers.GITHUB);
+            user.setAbout("This account is created using GitHub");
 
-                if(checkUser == null){
-                    userRepository.save(google_user);
-                    logger.info("user Saved : " + email);
-                }
+        } else {
+            logger.info("Oauth : Unknown provider");
+        }
 
+        User checkUser = userRepository.findByEmail(user.getEmail()).orElse(null);
 
-                
-                
-                new DefaultRedirectStrategy().sendRedirect(request, response, "/user/profile");
+        if (checkUser == null) {
+            userRepository.save(user);
+        }
+
+        new DefaultRedirectStrategy().sendRedirect(request, response, "/user/profile");
     }
-
-
-
-} 
+}
