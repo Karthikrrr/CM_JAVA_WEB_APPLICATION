@@ -10,15 +10,14 @@ import jakarta.servlet.http.HttpSession;
 public class SessionHelper {
 
     public static void removeMessage() {
-
         try {
             HttpSession httpSession = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                     .getRequest().getSession();
                     httpSession.removeAttribute("message");
 
         } catch (Exception e) {
-            System.out.println("Erron in Ssession" + e);
+            System.out.println("Erron in Session" + e);
         }
-    }
+    } 
 
 }

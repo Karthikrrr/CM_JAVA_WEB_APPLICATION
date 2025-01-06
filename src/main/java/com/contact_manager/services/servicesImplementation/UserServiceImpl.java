@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +16,13 @@ import com.contact_manager.services.UserService;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public User saveUser(User user) {
@@ -29,10 +30,7 @@ public class UserServiceImpl implements UserService {
         user.setUserId(userId);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoleList(List.of(WebAppConstants.ROLE_USER));
-
         return userRepository.save(user);
-
-
     }
 
     @Override
@@ -56,7 +54,6 @@ public class UserServiceImpl implements UserService {
         dbUser.setPhoneVerified(user.isPhoneVerified());
         dbUser.setProvider(user.getProvider());
         dbUser.setProviderUserId(user.getProviderUserId());
-
         return Optional.ofNullable(userRepository.save(dbUser));
     }
 
@@ -69,14 +66,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isUserExist(String userId) {
         User dbUser = userRepository.findById(userId).orElse(null);
-        return dbUser != null ? true : false;
-
+        return dbUser != null;
     }
 
     @Override
     public boolean isUserExistByEmail(String email) {
         User dbUser = userRepository.findByEmail(email).orElse(null);
-        return dbUser != null ? true : false;
+        return dbUser != null;
     }
 
     @Override
@@ -84,4 +80,8 @@ public class UserServiceImpl implements UserService {
         throw new UnsupportedOperationException("Unimplemented method 'getAllUsers'");
     }
 
+    @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
 }

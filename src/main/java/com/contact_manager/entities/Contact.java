@@ -10,9 +10,18 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class Contact {
 
     @Id
@@ -32,6 +41,12 @@ public class Contact {
     private String description;
 
     private boolean favorate = false;
+
+    private String websiteLink;
+
+    private String linkedInLink;
+
+    private String cloudinaryImagePublicId;
 
     @ManyToOne
     private User user;

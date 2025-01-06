@@ -1,6 +1,5 @@
 package com.contact_manager.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,11 +17,15 @@ import com.contact_manager.services.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
+
 @Controller
 public class PageController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public PageController(UserService userService){
+        this.userService = userService;
+    }
 
     @GetMapping("/")
     public String index(){
@@ -33,6 +36,12 @@ public class PageController {
     public String home() {
         return "home";
     }
+
+    @RequestMapping("/about")
+    public String aboutView() {
+        return "about.html";
+    }
+    
 
     @RequestMapping("/login")
     public String login() {
@@ -48,6 +57,7 @@ public class PageController {
 
     @RequestMapping(value = "/do-register", method = RequestMethod.POST)
     public String registerProcess(@Valid @ModelAttribute UserForm userForm, BindingResult bindingResult, HttpSession httpSession ) {
+        // Used When @Builder Is Used In Model or Entities
         // User user =
         // User.builder().name(userForm.getName()).email(userForm.getEmail()).password(userForm.getPassword())
         // .about(userForm.getAbout()).phoneNumber(userForm.getPhoneNumber()).build();

@@ -9,7 +9,5 @@ import com.contact_manager.entities.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
-
     Optional<User> findByEmail(String email);
-
 }

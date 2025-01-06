@@ -13,7 +13,7 @@
 
                 <div
                     class="block  p-6 border-t-[10px] border-green-700  bg-white rounded-xl shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-green-700 dark:hover:bg-gray-700">
-                    <div data-th-replace="message::message-box"></div>
+                    <div data-th-replace="~{message::message-box}"></div>
                     <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Login Here</h5>
                     <p class="font-normal text-gray-400 dark:text-gray-400">Start Managinh Contacts On Cloud ....</p>
                     <div class="text-red-600 text-center my-3" th:if="${param.error}">

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="~{base :: parent(~{::#contant}, ~{::title}, ~{::script})}">
+
+<head>
+    <title data-th-text="${loggedInUser.name} + ' | Profile'">Profile Page - SCM</title>
+</head>
+<body>
+    <div id="contant">
+        <div th:if="${loggedInUser}">
+            <div data-th-replace="~{user/sidebar :: sidebar}"></div>
+        </div>
+    <div  class="sm:pl-64 pt-20">
+        <div class="flex justify-center flex-col items-center">
+    <h1 class="text-3xl">Welcome To Profile Page</h1>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur, expedita dolor aut labore error magnam totam.</p>
+    </div>
+</div>
+    </div> 
+    </body>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
+<script> 
+    console.log("Profile Page");
+</script>
+</html>
