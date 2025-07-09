@@ -1,11 +1,10 @@
 package com.contact_manager.controller;
 
-
-import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.contact_manager.entities.Contact;
 import com.contact_manager.entities.User;
@@ -20,14 +20,13 @@ import com.contact_manager.forms.ContactForm;
 import com.contact_manager.helper.Helper;
 import com.contact_manager.helper.Message;
 import com.contact_manager.helper.MessageType;
+import com.contact_manager.helper.WebAppConstants;
 import com.contact_manager.services.ContactService;
 import com.contact_manager.services.ImageService;
 import com.contact_manager.services.UserService;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @Controller
 @RequestMapping("/user/contacts")
@@ -56,8 +55,6 @@ public class ContactController {
     public String saveContact(@Valid @ModelAttribute ContactForm contactForm, BindingResult bindingResult,
             Authentication authentication, HttpSession httpSession) {
         String username = Helper.getEmailOfLoggedInUser(authentication);
-
-        
 
         if (bindingResult.hasErrors()) {
             httpSession.setAttribute("message",
@@ -89,15 +86,40 @@ public class ContactController {
         return "redirect:/user/contacts/add";
     }
 
-
     @RequestMapping
-    public String viewContacts(Authentication authentication, Model model) {
+    public String viewContacts(Authentication authentication, Model model,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = WebAppConstants.PAGE_SIZE + "") int size,
+            @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
+            @RequestParam(value = "direction", defaultValue = "asc") String direction) {
         String username = Helper.getEmailOfLoggedInUser(authentication);
         User user = userService.getUserByEmail(username);
-        List<Contact> contacts = contactService.getByUser(user);
+        Page<Contact> contacts = contactService.getByUser(user, page, size, sortBy, direction);
         model.addAttribute("contacts", contacts);
+        model.addAttribute("pageSize", WebAppConstants.PAGE_SIZE);
         return "user/contacts";
     }
-    
 
+    @RequestMapping("/search")
+    public String searchHandler(
+            @RequestParam("field") String field, @RequestParam("keyword") String value,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = WebAppConstants.PAGE_SIZE + "") int size,
+            @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
+            @RequestParam(value = "direction", defaultValue = "asc") String direction, Model model) {
+                Page<Contact> searchByNamePage = null;
+        if (field.equalsIgnoreCase("name")) {
+            searchByNamePage = contactService.searchContactsByName(value, size, page, sortBy, direction);
+        }
+        else if(field.equalsIgnoreCase("email")){
+            searchByNamePage = contactService.searchContactsByEmail(value, size, page, sortBy, direction);
+        }
+        else if(field.equalsIgnoreCase("phone")){
+            searchByNamePage = contactService.searchContactsByPhoneNumber(value, size, page, sortBy, direction);
+        }
+        model.addAttribute("pageContact", searchByNamePage);
+        model.addAttribute("pageSize", WebAppConstants.PAGE_SIZE);
+
+        return "user/search";
+    }
 }

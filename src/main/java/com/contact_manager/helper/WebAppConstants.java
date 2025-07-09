@@ -9,4 +9,6 @@ public class WebAppConstants {
     public static final int CONTACT_IMAGE_HEIGHT = 500;
 
     public static final String CONATCT_IMAGE_CROP = "fill";
+
+    public static final int PAGE_SIZE = 4;
 }

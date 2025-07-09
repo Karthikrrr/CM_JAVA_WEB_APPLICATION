@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -68,7 +67,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy="user", cascade=CascadeType.ALL, fetch=FetchType.LAZY, orphanRemoval=true)
     private List<Contact> contacts = new ArrayList<>();
 
-   @ElementCollection(fetch = FetchType.EAGER)
+    // @ElementCollection(fetch = FetchType.LAZY)
     private List<String> roleList = new ArrayList<>();
 
     // private String emailToken;
