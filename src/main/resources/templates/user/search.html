@@ -1,29 +1,29 @@
 <!DOCTYPE html>
-<html lang="en" th:replace="~{base :: parent(~{::#contant}, ~{::title}, ~{::script})}">
+<html lang="en" data-th-replace="~{base :: parent(~{::#contant}, ~{::title}, ~{::script})}">
 
 <head>
     <title data-th-text="${loggedInUser.name} + ' | SCM'">Dashboard Page - SEARCH</title>
 </head>
 <body>
     <div id="contant">
-        <div th:if="${loggedInUser}">
+        <div data-th-if="${loggedInUser}">
             <div data-th-replace="~{user/sidebar :: sidebar}"></div>
         </div>
     <div  class="sm:pl-64 pt-20">
         <div class="flex justify-center flex-col items-center">
     <h1 class="text-3xl">Welcome To Search Results</h1>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur, expedita dolor aut labore error magnam totam.</p>
+    <p data-th-text="${pageContact.totalElements} + ' Results Found'"></p>
     </div>
 
     <div class="contacts_container p-5">
 
 
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-          <form action="" data-th-action="@{'/user/contacts/search'}">
+          <form data-th-object="${contactSearchForm}" data-th-action="@{'/user/contacts/search'}">
             <div class="flex p-5 space-x-4 items-center justify-start flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
                 <div>
-                    <select  name="field" id="countries_disabled" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      <option selected>Select Field</option>
+                    <select  data-th-field="*{field}" name="field" id="countries_disabled" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                      <option selected value="">Select Field</option>
                       <option value="name">Name</option>
                       <option value="phone">Phone</option>
                       <option value="email">E-mail</option>
@@ -39,14 +39,15 @@
                                 stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                         </svg>
                     </div>
-                    <input type="text" name="keyword" id="table-search-users"
+                    <input data-th-field="*{value}" type="text" id="table-search-users"
                         class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Search for users">
                 </div>
                 <button type="submit" class="px-3 py-2 bg-gray-800 text-white rounded" >Search</button>
             </div>
           </form>
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <table  data-th-unless="${pageContact.empty}"
+                    class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead
                     class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
@@ -115,27 +116,27 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="pagination_containar p-5 text-center">
+            <div data-th-unless="${pageContact.empty}" class="pagination_containar p-5 text-center">
                 <nav aria-label="Page navigation example">
                     <ul class="inline-flex -space-x-px text-base h-10">
                         <li data-th-unless="${pageContact.first}">
-                            <a data-th-href="@{'/user/contacts?size=' + ${pageSize} + '&page=' + ${pageContact.number-1}}"
+                            <a data-th-href="@{'/user/contacts/search?size='+${pageSize} + '&page='+ ${pageContact.number-1} + '&field=' + ${contactSearchForm.field} + '&value=' + ${contactSearchForm.value}}"
                                 class="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
                         </li>
                         <li data-th-each="index : ${#numbers.sequence(0,pageContact.totalPages-1)}">
-                            <a data-th-classappend="${index==pageContact.number ? 'bg-gray-600 ' : 'bg-white dark:bg-gray-800'}" data-th-href="@{'/user/contacts?size='+${pageSize}+'&page=' + ${index}}"
+                            <a data-th-classappend="${index==pageContact.number ? 'bg-gray-600 ' : 'bg-white dark:bg-gray-800'}" data-th-href="@{'/user/contacts/search?size='+${pageSize} + '&page='+ ${index} + '&field=' + ${contactSearchForm.field} + '&value=' + ${contactSearchForm.value}}"
                                 class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500  border border-gray-300 hover:bg-gray-100 hover:text-gray-700  dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                                 data-th-text="${index+1}"></a>
                         </li>
                         <li data-th-unless="${pageContact.last}">
-                            <a data-th-href="@{'/user/contacts?size=' + ${pageSize} + '&page=' + ${pageContact.number+1}}"
+                            <a data-th-href="@{'/user/contacts/search?size='+${pageSize} + '&page='+ ${pageContact.number+1} + '&field=' + ${contactSearchForm.field} + '&value=' + ${contactSearchForm.value}}"
                                 class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</a>
                         </li>
                     </ul>
                 </nav>
             </div>
+            <h1 data-th-if="${pageContact.empty}" class="text-5xl text-center p-4">No Result Found</h1>
         </div>
-
     </div>
 </div>
     </div> 

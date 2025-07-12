@@ -19,14 +19,14 @@ public class ContactServiceImpl implements ContactService {
 
     private final ContactRepository contactRepository;
 
-    public ContactServiceImpl(ContactRepository contactRepository){
+    public ContactServiceImpl(ContactRepository contactRepository) {
         this.contactRepository = contactRepository;
     }
 
     @Override
     public Contact saveContact(Contact contact) {
         String contactId = UUID.randomUUID().toString();
-        contact.setId(contactId); 
+        contact.setId(contactId);
         return contactRepository.save(contact);
     }
 
@@ -42,15 +42,17 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Contact getContactById(String id) {
-        return contactRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Contact Not Found With Given Id : " + id));
+        return contactRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Contact Not Found With Given Id : " + id));
     }
 
     @Override
     public void deleteContact(String id) {
-        Contact contact = contactRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Contact Not Found With Given Id : " + id));
+        Contact contact = contactRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Contact Not Found With Given Id : " + id));
         contactRepository.delete(contact);
     }
-    
+
     @Override
     public List<Contact> getByUserId(String userId) {
         return contactRepository.findByUserId(userId);
@@ -79,10 +81,9 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Page<Contact> searchContactsByPhoneNumber(String phone, int size, int page, String sortBy, String order) {
-       Sort phoneNumberSort = order.equals("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-       PageRequest pageable  = PageRequest.of(page, size, phoneNumberSort);
-       return contactRepository.findByPhoneNumberContaining(phone, pageable);
+        Sort phoneNumberSort = order.equals("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        PageRequest pageable = PageRequest.of(page, size, phoneNumberSort);
+        return contactRepository.findByPhoneNumberContaining(phone, pageable);
     }
 
 }
- 
