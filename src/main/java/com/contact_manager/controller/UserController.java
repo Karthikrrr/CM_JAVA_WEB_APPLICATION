@@ -6,11 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.contact_manager.services.UserService;
-
 
 
 @Controller
@@ -27,12 +26,12 @@ public class UserController {
         this.userService = userService;
     }
 
-    @RequestMapping(value="/dashboard", method=RequestMethod.GET)
+    @GetMapping("/dashboard")
     public String userDashboard() {
         return "user/dashboard";
     }
     
-    @RequestMapping(value = "/profile", method=RequestMethod.GET)
+    @GetMapping("/profile")
     public String userProfile(Model model, Authentication authentication) {
         return "user/profile";
     }

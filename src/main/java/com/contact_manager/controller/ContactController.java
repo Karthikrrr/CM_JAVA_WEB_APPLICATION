@@ -42,14 +42,14 @@ public class ContactController {
         this.imageService = imageService;
     }
 
-    @RequestMapping(value = "/add", method = RequestMethod.GET)
+    @GetMapping("/add")
     public String addContactView(Model model) {
         ContactForm contactForm = new ContactForm();
         model.addAttribute("contactForm", contactForm);
         return "user/addContacts";
     }
 
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @PostMapping("/add")
     public String saveContact(@Valid @ModelAttribute ContactForm contactForm, BindingResult bindingResult,
             Authentication authentication, HttpSession httpSession) {
         String username = Helper.getEmailOfLoggedInUser(authentication);
@@ -86,10 +86,10 @@ public class ContactController {
 
     @RequestMapping
     public String viewContacts(Authentication authentication, Model model,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = WebAppConstants.PAGE_SIZE + "") int size,
-            @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
-            @RequestParam(value = "direction", defaultValue = "asc") String direction) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = WebAppConstants.PAGE_SIZE + "") int size,
+            @RequestParam(defaultValue = "name") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
         String username = Helper.getEmailOfLoggedInUser(authentication);
         User user = userService.getUserByEmail(username);
         Page<Contact> contacts = contactService.getByUser(user, page, size, sortBy, direction);
@@ -101,11 +101,11 @@ public class ContactController {
 
     @RequestMapping("/search")
     public String searchHandler(
-            @ModelAttribute("contactSearchForm") ContactSearchForm contactSearchForm,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = WebAppConstants.PAGE_SIZE + "") int size,
-            @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
-            @RequestParam(value = "direction", defaultValue = "asc") String direction, Model model) {
+            @ModelAttribute ContactSearchForm contactSearchForm,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = WebAppConstants.PAGE_SIZE + "") int size,
+            @RequestParam(defaultValue = "name") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction, Model model) {
                 Page<Contact> searchByNamePage = null;
         if (contactSearchForm.getField().equalsIgnoreCase("name")) {
             searchByNamePage = contactService.searchContactsByName(contactSearchForm.getValue(), size, page, sortBy, direction);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" th:replace="~{base :: parent(~{::#contant}, ~{::title}, ~{::script})}">
+<html lang="en" data-th-replace="~{base :: parent(~{::#contant}, ~{::title}, ~{::script})}">
 
 <head>
     <title data-th-text="${loggedInUser.name} + ' | SCM'">Dashboard Page - SCM</title>
@@ -7,6 +7,7 @@
 
 <body>
     <div id="contant">
+
         <div data-th-if="${loggedInUser}">
             <div data-th-replace="~{user/sidebar :: sidebar}"></div>
         </div>
@@ -107,9 +108,9 @@
                                         <a href="">
                                             <i class="fa-solid fa-pen w-6 h-6"></i>
                                         </a>
-                                        <a href="">
+                                        <button th:data-id="${c.id}" data-th-onclick="loadUserData(this.getAttribute('data-id'))">
                                             <i class="fa-solid fa-eye w-6 h-6"></i>
-                                        </a>
+                                        </button>
                                     </td>
 
                                 </tr>
@@ -139,9 +140,12 @@
 
                 </div>
             </div>
+            <div data-th-replace="~{user/contact_models :: contact}"></div>
         </div>
+
     </div>
 </body>
+<script data-th-src="@{'/js/contact.js'}"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
 <script>
     console.log("Dashboard Page");

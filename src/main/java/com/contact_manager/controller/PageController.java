@@ -5,8 +5,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.contact_manager.entities.User;
 import com.contact_manager.forms.UserForm;
@@ -55,7 +55,7 @@ public class PageController {
         return "register";
     }
 
-    @RequestMapping(value = "/do-register", method = RequestMethod.POST)
+    @PostMapping("/do-register")
     public String registerProcess(@Valid @ModelAttribute UserForm userForm, BindingResult bindingResult, HttpSession httpSession ) {
         // Used When @Builder Is Used In Model or Entities
         // User user =
@@ -75,7 +75,7 @@ public class PageController {
 
         userService.saveUser(user);
 
-        Message registerSucessMessage = Message.builder().content("Register Succesful").type(MessageType.green).build();
+        Message registerSucessMessage = Message.builder().content("Register Successful").type(MessageType.green).build();
 
         httpSession.setAttribute("message", registerSucessMessage);
         return "redirect:/register";
